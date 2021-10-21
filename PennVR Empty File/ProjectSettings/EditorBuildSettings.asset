@@ -4,5 +4,17 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/PostProcessor Cheat Scene.unity
+    guid: 18ed4a37bc7efe040bdcd25f19eed291
+  - enabled: 1
+    path: Assets/Scenes/Simple Room Scene.unity
+    guid: 518c5e3ecb5f67c458dd2beb913eca53
+  - enabled: 1
+    path: Assets/Scenes/Interaction Scene.unity
+    guid: 89ef6fd8ba679ff4d8fe93ab8a6be3ab
+  - enabled: 1
+    path: Assets/Scenes/Empty Scene.unity
+    guid: 8f6648363c7f4404da67a14e0cc98f42
   m_configObjects: {}
