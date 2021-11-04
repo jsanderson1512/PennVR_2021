@@ -21,6 +21,8 @@ public class XRF_InteractionController : MonoBehaviour
     public GameObject ObjectWithAnimation;
     private Animator theAnimator;
 
+    public bool isSelected;
+
     //scene load stuff
     public string SceneToLoad;
 

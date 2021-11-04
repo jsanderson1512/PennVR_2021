@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class XRF_CameraRaycastInteractions : MonoBehaviour
 {
-
+    public float laserDistance = 100.0f;
     public GameObject raycastCamera;
     private bool dontHighlight;
     private Material[] tempMaterialsHigh;
@@ -29,48 +29,34 @@ public class XRF_CameraRaycastInteractions : MonoBehaviour
         {
             myRay = raycastCamera.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
         }
-        else if(camType == ClickType.ObjectForwardClick)
+        else if (camType == ClickType.ObjectForwardClick)
         {
             myRay = new Ray(raycastCamera.transform.position, raycastCamera.transform.forward);
         }
 
 
-        if (!IsPointerOverUIObject())
+
+        RaycastHit myRayHit;
+        if (Physics.Raycast(myRay, out myRayHit, laserDistance) && !IsPointerOverUIObject())
         {
-            RaycastHit myRayHit;
-            if (Physics.Raycast(myRay, out myRayHit, 100.0f))
+            //i shot out a ray and it hit something
+            Debug.Log("I hit something");
+            GameObject hitObject = myRayHit.transform.gameObject;
+
+            if (!hitObject.GetComponent<Collider>().isTrigger && hitObject.GetComponent<XRF_InteractionController>())
             {
-                //i shot out a ray and it hit something
-                Debug.Log("I hit something");
-                GameObject hitObject = myRayHit.transform.gameObject;
 
-                if(!hitObject.GetComponent<Collider>().isTrigger)
+                //i shot out a ray and hit something with an interaction controller
+                Debug.Log("I hit something with an interaction controller on it");
+                RayHit(hitObject);
+
+                if (Input.GetMouseButtonDown(0))
                 {
-
-                    if (hitObject.GetComponent<XRF_InteractionController>())
-                    {
-                        //i shot out a ray and hit something with an interaction controller
-                        Debug.Log("I hit something with an interaction controller on it");
-                        RayHit(hitObject);
-
-                        if (Input.GetMouseButtonDown(0))
-                        {
-                            ClickTheButton(hitObject);
-                        }
-                        else if (Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
-                        {
-                            ClickTheButton(hitObject);
-                        }
-                    }
-                    else
-                    {
-                        RayMissed();
-                    }
-
+                    ClickTheButton(hitObject);
                 }
-                else
+                else if (Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
                 {
-                    RayMissed();
+                    ClickTheButton(hitObject);
                 }
 
 
@@ -80,6 +66,11 @@ public class XRF_CameraRaycastInteractions : MonoBehaviour
                 RayMissed();
             }
         }
+        else
+        {
+            RayMissed();
+        }
+
     }
 
     public void ClickTheButton(GameObject hitObject)
