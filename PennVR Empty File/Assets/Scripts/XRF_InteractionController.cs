@@ -14,6 +14,9 @@ public class XRF_InteractionController : MonoBehaviour
         AnimationController,
         SceneChangeController,
         OnOffController,
+        GrabAndReturn,
+        GrabAndStay,
+        TeleportController
     };
     public InteractionType myType = InteractionType.AnimationController;  // this public var should appear as a drop down
 
@@ -22,6 +25,8 @@ public class XRF_InteractionController : MonoBehaviour
     private Animator theAnimator;
 
     public bool isSelected;
+    public bool isTeleporter;
+
 
     //scene load stuff
     public string SceneToLoad;
@@ -34,8 +39,11 @@ public class XRF_InteractionController : MonoBehaviour
     private bool OnOffSwitch;
 
     //Make Camera Child stuff
-    public GameObject objectToBecomeParent; 
+    public GameObject objectToBecomeParent;
 
+    //grab stuff
+    public Vector3 originalPos = Vector3.zero;
+    public bool isGrabbable;
 
     private void Start()
     {
@@ -55,6 +63,19 @@ public class XRF_InteractionController : MonoBehaviour
                 theAnimator.enabled = false;
             }
         }
+        else if (myType == InteractionType.TeleportController)
+        {
+            isTeleporter = true;
+        }
+        else if (myType == InteractionType.GrabAndReturn)
+        {
+            originalPos = gameObject.transform.position;
+            isGrabbable = true;
+        }
+        else if (myType == InteractionType.GrabAndStay)
+        {
+            isGrabbable = true;
+        }
 
     }
     private void OnTriggerEnter(Collider other)
@@ -64,13 +85,6 @@ public class XRF_InteractionController : MonoBehaviour
 
         DoTheThing();
 
-        /*
-        GameObject theCam = other.GetComponentInChildren<Camera>().gameObject;
-        if(theCam!=null)
-        {
-            DoTheThing(theCam);
-        }
-        */
     }
 
     public void DoTheThing()
@@ -125,41 +139,6 @@ public class XRF_InteractionController : MonoBehaviour
                 }
             }
 
-
-
-
-            /*
-            if (theAnimator.GetCurrentAnimatorStateInfo(0).IsName(animName))
-            {
-                Debug.Log("hey my animation is in the middle of playing or on loop");
-
-                if (theAnimator.isActiveAndEnabled)
-                {
-                    Debug.Log("my animation was playing and enabled, it will stop now");
-                    theAnimator.enabled = false;
-                }
-                else
-                {
-                    if( theAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1)
-                    {
-                        theAnimator.Play(animName, 0, 0);
-                    }
-                    //if at the end, restart
-                    //else below
-
-                    Debug.Log("my animation was in the middle of playing playing but not enabled");
-                    theAnimator.enabled = true;
-                }
-            }
-            else
-            {
-                Debug.Log("hey my animation ended, I'm going to start it over");
-                //this will be called if the animation has completed only.
-                theAnimator.enabled = true;
-                theAnimator.Play(animName, 0, 0);
-            }
-            */
-
         }
         else if (myType == InteractionType.SceneChangeController)
         {
@@ -195,6 +174,20 @@ public class XRF_InteractionController : MonoBehaviour
             {
                 OnOff(false, true);
             }
+        }
+        else if (myType == InteractionType.GrabAndReturn)
+        {
+            //movement handled in vr conroller raycast interactions .cs
+
+        }
+        else if (myType == InteractionType.GrabAndStay)
+        {
+            //movement handled in vr conroller raycast interactions .cs
+
+        }
+        else if (myType == InteractionType.TeleportController)
+        {
+            //movement handled in vr conroller raycast interactions .cs
         }
     }
     void OnOff(bool bool1, bool bool2)

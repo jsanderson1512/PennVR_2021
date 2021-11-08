@@ -211,6 +211,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   laserDistance: 100
   controllerGameObject: {fileID: 8478566659213295492}
+  cameraRig: {fileID: 8478566659213436626}
+  cameraEye: {fileID: 8478566659213491832}
+  feetIcon: {fileID: 6000381253118755251, guid: ebcdbe7586bf18648bf07464a8a34137,
+    type: 3}
 --- !u!114 &6314486237710508425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,6 +229,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   laserDistance: 100
   controllerGameObject: {fileID: 8478566659213456802}
+  cameraRig: {fileID: 8478566659213436626}
+  cameraEye: {fileID: 8478566659213491832}
+  feetIcon: {fileID: 6000381253118755251, guid: ebcdbe7586bf18648bf07464a8a34137,
+    type: 3}
 --- !u!1001 &6314486238852524834
 PrefabInstance:
   m_ObjectHideFlags: 0

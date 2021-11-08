@@ -11,6 +11,9 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
     #region PUBLIC VARIABLES
     public float laserDistance = 100.0f;
     public GameObject controllerGameObject;
+    public GameObject cameraRig;
+    public GameObject cameraEye;
+    public GameObject feetIcon;
     #endregion
 
     #region PRIVATE VARIABLES
@@ -20,13 +23,22 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
     private GameObject tempSelectedObject;
     private GameObject hitObject;
     private bool Clickable;
+    private bool Teleportable;
+    private Vector3 endPoint;
+    private bool iGrabbedYou;
+    private bool grabable;
+    private GameObject grabbedObject;
+    private float moveLength;
+    private float tempDistance;
+    private Vector3 basePosObject;
+    private Vector3 clickOrigin;
     #endregion
 
     #region AWAKE AND START FUNCTIONS
     private void Awake()
     {
-
-     
+        feetIcon = Instantiate(feetIcon);
+        feetIcon.SetActive(false);
     }
 
     void Start()
@@ -56,20 +68,63 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
 
             if (!hitObject.GetComponent<Collider>().isTrigger && hitObject.GetComponent<XRF_InteractionController>())
             {
+                
                 //i shot out a ray and hit something with an interaction controller
                 Debug.Log("I hit something with an interaction controller on it");
-                RayHit(hitObject);
-                Clickable = true;
 
+                if(hitObject.GetComponent<XRF_InteractionController>().isTeleporter)
+                {
+                    RayMissed();
+                    Teleportable = true;
+                    endPoint = myRayHit.transform.position;
+                    feetIcon.transform.position = endPoint;
+                    feetIcon.SetActive(true);
+                    grabable = false;
+                }
+                else if (hitObject.GetComponent<XRF_InteractionController>().isGrabbable)
+                {
+                    tempDistance = Vector3.Distance(origin, myRayHit.point);
+                    endPoint = myRayHit.transform.position;
+
+                    RayHit(hitObject);
+                    Clickable = false;
+                    feetIcon.SetActive(false);
+                    Teleportable = false;
+
+                    if (iGrabbedYou)
+                    {
+                        Vector3 grabEndPoint = origin + direction * moveLength;
+                        Vector3 movePosition = basePosObject + (grabEndPoint - clickOrigin);
+                        grabbedObject.transform.position = movePosition;
+                    }
+                    else
+                    {
+                        grabable = true;
+                    }
+                }
+                else
+                {
+                    RayHit(hitObject);
+                    Clickable = true;
+                    feetIcon.SetActive(false);
+                    Teleportable = false;
+                    grabable = false;
+                }
             }
             else
             {
                 RayMissed();
+                feetIcon.SetActive(false);
+                Teleportable = false;
+                grabable = false;
             }
         }
         else
         {
             RayMissed();
+            feetIcon.SetActive(false);
+            Teleportable = false;
+            grabable = false;
         }
     }
 
@@ -154,11 +209,37 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
         {
             ClickTheButton(hitObject);
         }
+        else if (grabable)
+        {
+            grabbedObject = hitObject;
+            iGrabbedYou = true;
+            moveLength = tempDistance;
+            basePosObject = grabbedObject.transform.position;
+            clickOrigin = endPoint;
+
+        }
+        else if (Teleportable)
+        {
+            cameraRig.transform.position = new Vector3(endPoint.x + (cameraRig.transform.position.x - cameraEye.transform.position.x), endPoint.y, endPoint.z + (cameraRig.transform.position.z - cameraEye.transform.position.z));
+        }
     }
 
     void TriggerUnClick(object sender, ClickedEventArgs e)
     {
         Debug.Log("hey i UN clicked the trigger button");
+
+        if (iGrabbedYou)
+        {
+            if (grabbedObject.GetComponent<XRF_InteractionController>().originalPos != Vector3.zero)
+            {
+                grabbedObject.transform.position = grabbedObject.GetComponent<XRF_InteractionController>().originalPos;
+            }
+
+            iGrabbedYou = false;
+            grabbedObject = null;
+            RayMissed();//clear everything after you let go
+        }
+
 
     }
 

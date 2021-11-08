@@ -43,7 +43,7 @@ public class XRF_CameraRaycastInteractions : MonoBehaviour
             Debug.Log("I hit something");
             GameObject hitObject = myRayHit.transform.gameObject;
 
-            if (!hitObject.GetComponent<Collider>().isTrigger && hitObject.GetComponent<XRF_InteractionController>())
+            if (!hitObject.GetComponent<Collider>().isTrigger && hitObject.GetComponent<XRF_InteractionController>() && !hitObject.GetComponent<XRF_InteractionController>().isTeleporter)
             {
 
                 //i shot out a ray and hit something with an interaction controller
