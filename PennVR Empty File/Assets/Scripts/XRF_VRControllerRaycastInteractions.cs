@@ -14,6 +14,7 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
     public GameObject cameraRig;
     public GameObject cameraEye;
     public GameObject feetIcon;
+    public GameObject pointerPrefab;
     #endregion
 
     #region PRIVATE VARIABLES
@@ -32,6 +33,7 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
     private float tempDistance;
     private Vector3 basePosObject;
     private Vector3 clickOrigin;
+    private LineRenderer lineRend;
     #endregion
 
     #region AWAKE AND START FUNCTIONS
@@ -49,6 +51,14 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
         trackedController.PadClicked += new ClickedEventHandler(PadClicked);
         trackedController.MenuButtonClicked += new ClickedEventHandler(MenuClick);
         trackedController.Gripped += new ClickedEventHandler(Gripped);
+
+        lineRend = controllerGameObject.gameObject.AddComponent<LineRenderer>();
+        lineRend.material = new Material(Shader.Find("Unlit/Color"));
+        lineRend.material.color = Color.red;
+        lineRend.startWidth = 0.002f;
+        lineRend.endWidth = 0.002f;
+        lineRend.positionCount = 2;
+        pointerPrefab = Instantiate(pointerPrefab);
 
     }
     #endregion
@@ -71,12 +81,13 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
                 
                 //i shot out a ray and hit something with an interaction controller
                 Debug.Log("I hit something with an interaction controller on it");
+                endPoint = myRayHit.point;
 
-                if(hitObject.GetComponent<XRF_InteractionController>().isTeleporter)
+
+                if (hitObject.GetComponent<XRF_InteractionController>().isTeleporter)
                 {
                     RayMissed();
                     Teleportable = true;
-                    endPoint = myRayHit.transform.position;
                     feetIcon.transform.position = endPoint;
                     feetIcon.SetActive(true);
                     grabable = false;
@@ -84,15 +95,15 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
                 else if (hitObject.GetComponent<XRF_InteractionController>().isGrabbable)
                 {
                     tempDistance = Vector3.Distance(origin, myRayHit.point);
-                    endPoint = myRayHit.transform.position;
-
                     RayHit(hitObject);
                     Clickable = false;
                     feetIcon.SetActive(false);
                     Teleportable = false;
-
+                    Debug.Log("hey i hit a grabbable");
+                    
                     if (iGrabbedYou)
                     {
+                        Debug.Log("hey i grabbed is true");
                         Vector3 grabEndPoint = origin + direction * moveLength;
                         Vector3 movePosition = basePosObject + (grabEndPoint - clickOrigin);
                         grabbedObject.transform.position = movePosition;
@@ -113,6 +124,7 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
             }
             else
             {
+                endPoint = origin + direction * 0.5f;
                 RayMissed();
                 feetIcon.SetActive(false);
                 Teleportable = false;
@@ -121,14 +133,17 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
         }
         else
         {
+            endPoint = origin + direction * 0.5f;
             RayMissed();
             feetIcon.SetActive(false);
             Teleportable = false;
             grabable = false;
         }
+
+        pointerPrefab.transform.position = endPoint;
+        lineRend.SetPosition(0, origin);
+        lineRend.SetPosition(1, endPoint);
     }
-
-
 
     public void ClickTheButton(GameObject hitObject)
     {
@@ -194,12 +209,6 @@ public class XRF_VRControllerRaycastInteractions : MonoBehaviour
             unHighlightThis.GetComponent<XRF_InteractionController>().isSelected = false;
         }
     }
-
-
-
-
-
-
 
     void TriggerClick(object sender, ClickedEventArgs e)
     {
