@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/LOMEX Scene.unity
     guid: 38ee094adb1b1dd4aad1e475fc478ad5
   - enabled: 1
